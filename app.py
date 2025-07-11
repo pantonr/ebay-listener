@@ -2,7 +2,7 @@ from flask import Flask, request, abort
 
 app = Flask(__name__)
 
-VERIFICATION_TOKEN = "your_secret_token"
+VERIFICATION_TOKEN = "PantonrUltraSecureWebhookToken2025XYZabc123"
 
 @app.route("/ebay-account-deletion", methods=["POST"])
 def account_deletion():
