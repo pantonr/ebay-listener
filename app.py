@@ -1,16 +1,31 @@
-from flask import Flask, request, abort
+from flask import Flask, request, jsonify, abort
+import hashlib
 
 app = Flask(__name__)
 
 VERIFICATION_TOKEN = "PantonrUltraSecureWebhookToken2025XYZabc123"
+ENDPOINT_URL = "https://pantonr-ebay-listener-c53662eef1b0.herokuapp.com/ebay-account-deletion"
 
-@app.route("/ebay-account-deletion", methods=["POST"])
+@app.route("/ebay-account-deletion", methods=["GET", "POST"])
 def account_deletion():
-    token = request.headers.get("X-Verification-Token")
-    if token != VERIFICATION_TOKEN:
-        abort(403)
-    print("Received deletion event:", request.json)
-    return "", 200
+    if request.method == "GET":
+        # Handle challenge
+        challenge_code = request.args.get("challenge_code")
+        if not challenge_code:
+            abort(400)
+
+        # Hash: challengeCode + verificationToken + endpoint
+        to_hash = challenge_code + VERIFICATION_TOKEN + ENDPOINT_URL
+        response_hash = hashlib.sha256(to_hash.encode('utf-8')).hexdigest()
+
+        return jsonify({"challengeResponse": response_hash}), 200
+
+    elif request.method == "POST":
+        token = request.headers.get("X-Verification-Token")
+        if token != VERIFICATION_TOKEN:
+            abort(403)
+        print("Received deletion event:", request.json)
+        return "", 200
 
 if __name__ == "__main__":
     app.run()
