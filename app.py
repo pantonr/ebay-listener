@@ -6,6 +6,7 @@ app = Flask(__name__)
 VERIFICATION_TOKEN = "PantonrUltraSecureWebhookToken2025XYZabc123"
 ENDPOINT_URL = "https://pantonr-ebay-listener-c53662eef1b0.herokuapp.com/ebay-account-deletion"
 
+
 @app.route("/ebay-account-deletion", methods=["GET", "POST"])
 def account_deletion():
     if request.method == "GET":
@@ -23,15 +24,16 @@ def account_deletion():
 
 @app.route("/oauth-return", methods=["GET"])
 def oauth_return():
-    ebay_token = request.args.get("ebaytkn")
-    token_expiry = request.args.get("tknexp")
-    username = request.args.get("username")
+    # Correctly pull the real eBay OAuth params
+    auth_code = request.args.get("code")
+    expires_in = request.args.get("expires_in")
+    state = request.args.get("state")
 
     return f"""
     <h1>✅ eBay OAuth Complete!</h1>
-    <p><b>Token:</b> {ebay_token}</p>
-    <p><b>Expires:</b> {token_expiry}</p>
-    <p><b>Username:</b> {username}</p>
+    <p><b>Authorization Code:</b> {auth_code}</p>
+    <p><b>Expires In:</b> {expires_in} seconds</p>
+    <p><b>State:</b> {state}</p>
     """
 
 if __name__ == "__main__":
